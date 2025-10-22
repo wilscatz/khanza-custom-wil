@@ -782,6 +782,8 @@ public final class DlgRawatJalan extends javax.swing.JDialog {
                 column.setMaxWidth(0);
             }else{
                 column.setPreferredWidth(90);
+                //column.setMinWidth(0);
+                //column.setMaxWidth(0);
             }
         }
         tbTindakan.setDefaultRenderer(Object.class, new WarnaTable());

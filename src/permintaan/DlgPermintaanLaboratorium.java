@@ -2242,12 +2242,30 @@ private void BtnHapusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
 
     private void isPsien(){
         try {
-            pstindakan=koneksi.prepareStatement(
-                "select reg_periksa.no_rkm_medis,reg_periksa.kd_pj,reg_periksa.kd_dokter,dokter.nm_dokter,pasien.nm_pasien,pasien.jk,pasien.umur,"+
-                "concat(pasien.alamat,', ',kelurahan.nm_kel,', ',kecamatan.nm_kec,', ',kabupaten.nm_kab) as alamat "+
-                "from reg_periksa inner join pasien on reg_periksa.no_rkm_medis=pasien.no_rkm_medis inner join kelurahan on pasien.kd_kel=kelurahan.kd_kel "+
-                "inner join kecamatan on pasien.kd_kec=kecamatan.kd_kec inner join kabupaten on pasien.kd_kab=kabupaten.kd_kab "+
-                "inner join dokter on reg_periksa.kd_dokter=dokter.kd_dokter where no_rawat=?");
+//            pstindakan=koneksi.prepareStatement(
+//                "select reg_periksa.no_rkm_medis,reg_periksa.kd_pj,reg_periksa.kd_dokter,dokter.nm_dokter,pasien.nm_pasien,pasien.jk,pasien.umur,"+
+//                "concat(pasien.alamat,', ',kelurahan.nm_kel,', ',kecamatan.nm_kec,', ',kabupaten.nm_kab) as alamat "+
+//                "from reg_periksa inner join pasien on reg_periksa.no_rkm_medis=pasien.no_rkm_medis inner join kelurahan on pasien.kd_kel=kelurahan.kd_kel "+
+//                "inner join kecamatan on pasien.kd_kec=kecamatan.kd_kec inner join kabupaten on pasien.kd_kab=kabupaten.kd_kab "+
+//                "inner join dokter on reg_periksa.kd_dokter=dokter.kd_dokter where no_rawat=?");
+
+              pstindakan = koneksi.prepareStatement(
+                  "SELECT reg_periksa.no_rkm_medis, reg_periksa.kd_pj, " +
+                  "COALESCE(dpjp_ranap.kd_dokter, reg_periksa.kd_dokter) AS kd_dokter, " + // untuk menampilkan dpjp
+                  "COALESCE(dokter_dpjp.nm_dokter, dokter_poli.nm_dokter) AS nm_dokter, " + // 
+                  "pasien.nm_pasien, pasien.jk, pasien.umur, " +
+                  "CONCAT(pasien.alamat, ', ', kelurahan.nm_kel, ', ', kecamatan.nm_kec, ', ', kabupaten.nm_kab) AS alamat " +
+                  "FROM reg_periksa " +
+                  "INNER JOIN pasien ON reg_periksa.no_rkm_medis = pasien.no_rkm_medis " +
+                  "LEFT JOIN kelurahan ON pasien.kd_kel = kelurahan.kd_kel " +
+                  "LEFT JOIN kecamatan ON pasien.kd_kec = kecamatan.kd_kec " +
+                  "LEFT JOIN kabupaten ON pasien.kd_kab = kabupaten.kd_kab " +
+                  "LEFT JOIN dpjp_ranap ON reg_periksa.no_rawat = dpjp_ranap.no_rawat " +
+                  "LEFT JOIN dokter AS dokter_poli ON reg_periksa.kd_dokter = dokter_poli.kd_dokter " + //
+                  "LEFT JOIN dokter AS dokter_dpjp ON dpjp_ranap.kd_dokter = dokter_dpjp.kd_dokter " + //
+                  "WHERE reg_periksa.no_rawat = ?"
+                );
+
             try {
                 pstindakan.setString(1,TNoRw.getText());
                 rstindakan=pstindakan.executeQuery();
