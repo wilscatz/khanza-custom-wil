@@ -3773,6 +3773,7 @@ public class DlgKamarInap extends javax.swing.JDialog {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 MnFilterDPJPActionPerformed(evt);
             }
+            
         });
         MnUtamaDPJP.add(MnFilterDPJP);
         
@@ -18824,13 +18825,27 @@ public class DlgKamarInap extends javax.swing.JDialog {
             }
 
             key=kmr+" "+terbitsep;
-            if(!TCari.getText().equals("")){
-                key= kmr+"and (kamar_inap.no_rawat like '%"+TCari.getText().trim()+"%' or reg_periksa.no_rkm_medis like '%"+TCari.getText().trim()+"%' or pasien.nm_pasien like '%"+TCari.getText().trim()+"%' or "+
-                   "concat(pasien.alamat,', ',kelurahan.nm_kel,', ',kecamatan.nm_kec,', ',kabupaten.nm_kab) like '%"+TCari.getText().trim()+"%' or kamar_inap.kd_kamar like '%"+TCari.getText().trim()+"%' or "+
-                   "bangsal.nm_bangsal like '%"+TCari.getText().trim()+"%' or kamar_inap.diagnosa_awal like '%"+TCari.getText().trim()+"%' or kamar_inap.diagnosa_akhir like '%"+TCari.getText().trim()+"%' or "+
-                   "kamar_inap.tgl_masuk like '%"+TCari.getText().trim()+"%' or dokter.nm_dokter like '%"+TCari.getText().trim()+"%' or kamar_inap.stts_pulang like '%"+TCari.getText().trim()+"%' or "+
-                   "kamar_inap.tgl_keluar like '%"+TCari.getText().trim()+"%' or penjab.png_jawab like '%"+TCari.getText().trim()+"%' or pasien.agama like '%"+TCari.getText().trim()+"%') "+terbitsep;
-            }
+//            if(!TCari.getText().equals("")){
+//                key= kmr+"and (kamar_inap.no_rawat like '%"+TCari.getText().trim()+"%' or reg_periksa.no_rkm_medis like '%"+TCari.getText().trim()+"%' or pasien.nm_pasien like '%"+TCari.getText().trim()+"%' or "+
+//                   "concat(pasien.alamat,', ',kelurahan.nm_kel,', ',kecamatan.nm_kec,', ',kabupaten.nm_kab) like '%"+TCari.getText().trim()+"%' or kamar_inap.kd_kamar like '%"+TCari.getText().trim()+"%' or "+
+//                   "bangsal.nm_bangsal like '%"+TCari.getText().trim()+"%' or kamar_inap.diagnosa_awal like '%"+TCari.getText().trim()+"%' or kamar_inap.diagnosa_akhir like '%"+TCari.getText().trim()+"%' or "+
+//                   "kamar_inap.tgl_masuk like '%"+TCari.getText().trim()+"%' or dokter.nm_dokter like '%"+TCari.getText().trim()+"%' or kamar_inap.stts_pulang like '%"+TCari.getText().trim()+"%' or "+
+//                   "kamar_inap.tgl_keluar like '%"+TCari.getText().trim()+"%' or penjab.png_jawab like '%"+TCari.getText().trim()+"%' or pasien.agama like '%"+TCari.getText().trim()+"%') "+terbitsep;
+//            }
+
+              if(!TCari.getText().equals("")){
+                  key = kmr + "and (kamar_inap.no_rawat like '%"+TCari.getText().trim()+"%' or " +
+                    "reg_periksa.no_rkm_medis like '%"+TCari.getText().trim()+"%' or pasien.nm_pasien like '%"+TCari.getText().trim()+"%' or " +
+                    "concat(pasien.alamat,', ',kelurahan.nm_kel,', ',kecamatan.nm_kec,', ',kabupaten.nm_kab) like '%"+TCari.getText().trim()+"%' or " +
+                    "kamar_inap.kd_kamar like '%"+TCari.getText().trim()+"%' or bangsal.nm_bangsal like '%"+TCari.getText().trim()+"%' or " +
+                    "kamar_inap.diagnosa_awal like '%"+TCari.getText().trim()+"%' or kamar_inap.diagnosa_akhir like '%"+TCari.getText().trim()+"%' or " +
+                    "kamar_inap.tgl_masuk like '%"+TCari.getText().trim()+"%' or " +
+                    "IFNULL(dpjp.nm_dokter,dokter.nm_dokter) like '%"+TCari.getText().trim()+"%' or " + //bagian ketika pencarian di key word ketika pilih nama dokter
+                    "kamar_inap.stts_pulang like '%"+TCari.getText().trim()+"%' or kamar_inap.tgl_keluar like '%"+TCari.getText().trim()+"%' or " +
+                    "penjab.png_jawab like '%"+TCari.getText().trim()+"%' or pasien.agama like '%"+TCari.getText().trim()+"%') " + terbitsep;
+}
+  
+
 
             Valid.tabelKosong(tabMode);
             new SwingWorker<Void, Void>() {
@@ -18838,32 +18853,53 @@ public class DlgKamarInap extends javax.swing.JDialog {
                 protected Void doInBackground() {
                     try{
                           
-                         ps = koneksi.prepareStatement(
-                              "SELECT kamar_inap.no_rawat, reg_periksa.no_rkm_medis, pasien.nm_pasien, " +
-                              "CONCAT(pasien.alamat, ', ', kelurahan.nm_kel, ', ', kecamatan.nm_kec, ', ', kabupaten.nm_kab) AS alamat, " +
-                              "reg_periksa.p_jawab, reg_periksa.hubunganpj, penjab.png_jawab, " +
-                              "CONCAT(kamar_inap.kd_kamar, ' ', bangsal.nm_bangsal) AS kamar, kamar_inap.trf_kamar, " +
-                              "kamar_inap.diagnosa_awal, kamar_inap.diagnosa_akhir, kamar_inap.tgl_masuk, kamar_inap.jam_masuk, " +
-                              "IF(kamar_inap.tgl_keluar='0000-00-00','',kamar_inap.tgl_keluar) AS tgl_keluar, " +
-                              "IF(kamar_inap.jam_keluar='00:00:00','',kamar_inap.jam_keluar) AS jam_keluar, " +
-                              "kamar_inap.ttl_biaya, kamar_inap.stts_pulang, kamar_inap.lama, " +
-                              "IFNULL(dpjp.nm_dokter, dokter.nm_dokter) AS nm_dokter, " + // <<== ini yang ambil DPJP kalau ada
-                              "kamar_inap.kd_kamar, reg_periksa.kd_pj, CONCAT(reg_periksa.umurdaftar,' ',reg_periksa.sttsumur) AS umur, " +
-                              "reg_periksa.status_bayar, pasien.agama " +
-                              "FROM kamar_inap " +
-                              "INNER JOIN reg_periksa ON kamar_inap.no_rawat = reg_periksa.no_rawat " +
-                              "INNER JOIN pasien ON reg_periksa.no_rkm_medis = pasien.no_rkm_medis " +
-                              "INNER JOIN kamar ON kamar_inap.kd_kamar = kamar.kd_kamar " +
-                              "INNER JOIN bangsal ON kamar.kd_bangsal = bangsal.kd_bangsal " +
-                              "INNER JOIN kelurahan ON pasien.kd_kel = kelurahan.kd_kel " +
-                              "INNER JOIN kecamatan ON pasien.kd_kec = kecamatan.kd_kec " +
-                              "INNER JOIN kabupaten ON pasien.kd_kab = kabupaten.kd_kab " +
-                              "INNER JOIN dokter ON reg_periksa.kd_dokter = dokter.kd_dokter " +
-                              "LEFT JOIN dpjp_ranap ON dpjp_ranap.no_rawat = reg_periksa.no_rawat " +
-                              "LEFT JOIN dokter AS dpjp ON dpjp_ranap.kd_dokter = dpjp.kd_dokter " +
-                              "INNER JOIN penjab ON reg_periksa.kd_pj = penjab.kd_pj " +
-                              "WHERE " + key + " " + order
-                            );
+ps = koneksi.prepareStatement(
+    "SELECT kamar_inap.no_rawat, reg_periksa.no_rkm_medis, pasien.nm_pasien, " +
+    "CONCAT(pasien.alamat, ', ', kelurahan.nm_kel, ', ', kecamatan.nm_kec, ', ', kabupaten.nm_kab) AS alamat, " +
+    "reg_periksa.p_jawab, reg_periksa.hubunganpj, penjab.png_jawab, " +
+    "CONCAT(kamar_inap.kd_kamar, ' ', bangsal.nm_bangsal) AS kamar, kamar_inap.trf_kamar, " +
+    "kamar_inap.diagnosa_awal, kamar_inap.diagnosa_akhir, kamar_inap.tgl_masuk, kamar_inap.jam_masuk, " +
+    "IF(kamar_inap.tgl_keluar='0000-00-00','',kamar_inap.tgl_keluar) AS tgl_keluar, " +
+    "IF(kamar_inap.jam_keluar='00:00:00','',kamar_inap.jam_keluar) AS jam_keluar, " +
+    "kamar_inap.ttl_biaya, kamar_inap.stts_pulang, kamar_inap.lama, " +
+
+    // 🔹 PERUBAHAN 1:
+    // Ganti dokter.nm_dokter jadi IFNULL(dpjp.nm_dokter, dokter.nm_dokter)
+    // Tujuannya agar kalau pasien punya DPJP, nama DPJP ditampilkan.
+    // Kalau belum, pakai dokter pemeriksa biasa.
+    "IFNULL(dpjp.nm_dokter, dokter.nm_dokter) AS nm_dokter, " +
+
+    "kamar_inap.kd_kamar, reg_periksa.kd_pj, CONCAT(reg_periksa.umurdaftar,' ',reg_periksa.sttsumur) AS umur, " +
+    "reg_periksa.status_bayar, pasien.agama " +
+    "FROM kamar_inap " +
+    "INNER JOIN reg_periksa ON kamar_inap.no_rawat = reg_periksa.no_rawat " +
+    "INNER JOIN pasien ON reg_periksa.no_rkm_medis = pasien.no_rkm_medis " +
+    "INNER JOIN kamar ON kamar_inap.kd_kamar = kamar.kd_kamar " +
+    "INNER JOIN bangsal ON kamar.kd_bangsal = bangsal.kd_bangsal " +
+    "INNER JOIN kelurahan ON pasien.kd_kel = kelurahan.kd_kel " +
+    "INNER JOIN kecamatan ON pasien.kd_kec = kecamatan.kd_kec " +
+    "INNER JOIN kabupaten ON pasien.kd_kab = kabupaten.kd_kab " +
+    "INNER JOIN dokter ON reg_periksa.kd_dokter = dokter.kd_dokter " +
+
+    // 🔹 PERUBAHAN 2:
+    // Tambahkan LEFT JOIN dpjp_ranap + LEFT JOIN dokter AS dpjp
+    // Supaya bisa menghubungkan pasien dengan dokter DPJP (kalau ada)
+    "LEFT JOIN dpjp_ranap ON dpjp_ranap.no_rawat = reg_periksa.no_rawat " +
+    "LEFT JOIN dokter AS dpjp ON dpjp_ranap.kd_dokter = dpjp.kd_dokter " +
+
+    "INNER JOIN penjab ON reg_periksa.kd_pj = penjab.kd_pj " +
+
+    // 🔹 PERUBAHAN 3:
+    // Ganti WHERE lama dengan logika IF:
+    // - Kalau `namadokter` kosong → tampil semua pasien
+    // - Kalau `namadokter` diisi → filter berdasarkan dokter (bisa DPJP maupun dokter biasa)
+    //   dengan IFNULL(dpjp.kd_dokter, dokter.kd_dokter)
+    (namadokter.equals("") 
+        ? "WHERE " + key + " " + order 
+        : "WHERE IFNULL(dpjp.kd_dokter, dokter.kd_dokter) = '" + namadokter + "' AND " + key + " " + order)
+);
+
+
 //                        ps=koneksi.prepareStatement(
 //                           "select kamar_inap.no_rawat,reg_periksa.no_rkm_medis,pasien.nm_pasien,concat(pasien.alamat,', ',kelurahan.nm_kel,', ',kecamatan.nm_kec,', ',kabupaten.nm_kab) as alamat,reg_periksa.p_jawab,reg_periksa.hubunganpj,"+
 //                           "penjab.png_jawab,concat(kamar_inap.kd_kamar,' ',bangsal.nm_bangsal) as kamar,kamar_inap.trf_kamar,kamar_inap.diagnosa_awal,kamar_inap.diagnosa_akhir," +
