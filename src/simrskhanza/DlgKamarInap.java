@@ -18825,6 +18825,7 @@ public class DlgKamarInap extends javax.swing.JDialog {
             }
 
             key=kmr+" "+terbitsep;
+            // Khanza default
 //            if(!TCari.getText().equals("")){
 //                key= kmr+"and (kamar_inap.no_rawat like '%"+TCari.getText().trim()+"%' or reg_periksa.no_rkm_medis like '%"+TCari.getText().trim()+"%' or pasien.nm_pasien like '%"+TCari.getText().trim()+"%' or "+
 //                   "concat(pasien.alamat,', ',kelurahan.nm_kel,', ',kecamatan.nm_kec,', ',kabupaten.nm_kab) like '%"+TCari.getText().trim()+"%' or kamar_inap.kd_kamar like '%"+TCari.getText().trim()+"%' or "+
@@ -18833,6 +18834,7 @@ public class DlgKamarInap extends javax.swing.JDialog {
 //                   "kamar_inap.tgl_keluar like '%"+TCari.getText().trim()+"%' or penjab.png_jawab like '%"+TCari.getText().trim()+"%' or pasien.agama like '%"+TCari.getText().trim()+"%') "+terbitsep;
 //            }
 
+                // Pencarian di keyword pasien ranap
               if(!TCari.getText().equals("")){
                   key = kmr + "and (kamar_inap.no_rawat like '%"+TCari.getText().trim()+"%' or " +
                     "reg_periksa.no_rkm_medis like '%"+TCari.getText().trim()+"%' or pasien.nm_pasien like '%"+TCari.getText().trim()+"%' or " +
@@ -18843,7 +18845,7 @@ public class DlgKamarInap extends javax.swing.JDialog {
                     "IFNULL(dpjp.nm_dokter,dokter.nm_dokter) like '%"+TCari.getText().trim()+"%' or " + //bagian ketika pencarian di key word ketika pilih nama dokter
                     "kamar_inap.stts_pulang like '%"+TCari.getText().trim()+"%' or kamar_inap.tgl_keluar like '%"+TCari.getText().trim()+"%' or " +
                     "penjab.png_jawab like '%"+TCari.getText().trim()+"%' or pasien.agama like '%"+TCari.getText().trim()+"%') " + terbitsep;
-}
+              }
   
 
 
@@ -18852,7 +18854,7 @@ public class DlgKamarInap extends javax.swing.JDialog {
                 @Override
                 protected Void doInBackground() {
                     try{
-                          
+       // dpjp otomatis jika sudah dipilih, atau isi dokter umum jika belum dpjp                   
 ps = koneksi.prepareStatement(
     "SELECT kamar_inap.no_rawat, reg_periksa.no_rkm_medis, pasien.nm_pasien, " +
     "CONCAT(pasien.alamat, ', ', kelurahan.nm_kel, ', ', kecamatan.nm_kec, ', ', kabupaten.nm_kab) AS alamat, " +
@@ -18899,7 +18901,7 @@ ps = koneksi.prepareStatement(
         : "WHERE IFNULL(dpjp.kd_dokter, dokter.kd_dokter) = '" + namadokter + "' AND " + key + " " + order)
 );
 
-
+            // Default Khanza
 //                        ps=koneksi.prepareStatement(
 //                           "select kamar_inap.no_rawat,reg_periksa.no_rkm_medis,pasien.nm_pasien,concat(pasien.alamat,', ',kelurahan.nm_kel,', ',kecamatan.nm_kec,', ',kabupaten.nm_kab) as alamat,reg_periksa.p_jawab,reg_periksa.hubunganpj,"+
 //                           "penjab.png_jawab,concat(kamar_inap.kd_kamar,' ',bangsal.nm_bangsal) as kamar,kamar_inap.trf_kamar,kamar_inap.diagnosa_awal,kamar_inap.diagnosa_akhir," +
