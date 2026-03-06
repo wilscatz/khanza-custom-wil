@@ -290,7 +290,9 @@ public class DlgKamarInap extends javax.swing.JDialog {
             }else if(i==17){
                 column.setPreferredWidth(40);
             }else if(i==18){
+                //dr P.J
                 column.setPreferredWidth(130);
+               
             }else if(i==19){
                 column.setMinWidth(0);
                 column.setMaxWidth(0);
@@ -3456,6 +3458,7 @@ public class DlgKamarInap extends javax.swing.JDialog {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 MnFilterDPJPActionPerformed(evt);
             }
+            
         });
         MnUtamaDPJP.add(MnFilterDPJP);
         
